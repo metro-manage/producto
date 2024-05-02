@@ -544,6 +544,9 @@ var producto = ()=>{
         if( render.itemTrue ) {
             
             $elements.itemTrue.insertAdjacentHTML('beforeend', Data.value.map( data => {
+
+                console.log(data);
+
                 return `
                     <a href="#/producto/${ data.id }" class="a_AtXWaYn">
                         <div class="div_6JXzBm">
@@ -569,7 +572,7 @@ var producto = ()=>{
         const element = document.createTextNode("");
 
         const queries = {
-            query       : 0,
+            query       : 3,
             query_limit : [ $elements.itemTrue.children.length, 50 ].join(','),
             col_1       : 10000,
             ...filter,
@@ -581,6 +584,7 @@ var producto = ()=>{
             .then( data => {
                 if( element.parentElement ) {
                     Data.value = data;
+                    console.log(data);
                 }
             });
 
@@ -795,6 +799,14 @@ var productoId = ()=>{
      
     return $element
 };
+
+
+/*
+[
+    "SELECT {$TABLE[0]['id']}.*, {$TABLE_DATA_JSON[$TABLE[1]['id']]}, {$TABLE_DATA_JSON[$TABLE[2]['id']]}, {$TABLE_DATA_JSON[$TABLE[3]['id']]}, {$TABLE_DATA_JSON[$TABLE[4]['id']]}, {$TABLE_DATA_JSON[$TABLE[5]['id']]} FROM {$TABLE_AS[0]} {$TABLE_LEFT_JOIN[1]} {$TABLE_LEFT_JOIN[2]} {$TABLE_LEFT_JOIN[3]} {$TABLE_LEFT_JOIN[4]} {$TABLE_LEFT_JOIN[5]} AND {$TABLE[2]['id']}.status = 1",
+    []
+]
+*/
 
 var routes = ()=>{
     
