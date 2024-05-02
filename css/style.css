@@ -1,0 +1,52 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--color-background);
+  font-family: sans-serif;
+  user-select: none;
+}
+
+svg {
+  width: 15px;
+  height: 15px;
+  fill: var(--color-letter);
+}
+
+button,
+input,
+textarea {
+  background: none;
+  border: none;
+  outline: none;
+
+  color: inherit;
+  font-weight: inherit;
+}
+
+#root {
+  width: 100%;
+  height: 100dvh;
+
+  display: flex;
+  overflow: hidden;
+}
+
+.container {
+  position: relative;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.content-page {
+  display: flex;
+  flex: 1;
+
+  overflow-y: auto;
+}
