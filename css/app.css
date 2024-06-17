@@ -482,6 +482,10 @@
       color: var(--color-item);
     }
   }
+
+  & svg {
+    fill: var(--color-item);
+  }
 }
 
 /* ----- PAGES -- PRODUCTO.CSS ----- */
@@ -510,7 +514,6 @@
 .div_6JXzBm {
   flex-grow: 1;
   aspect-ratio: 1/1;
-  padding: 10px;
 
   overflow: hidden;
 
@@ -529,8 +532,6 @@
   gap: 10px;
 
   height: 50px;
-
-  text-align: center;
 
   & span {
     font-size: 13px;

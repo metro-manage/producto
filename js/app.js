@@ -16,6 +16,8 @@ var eleSelection = ( parameters = {} )=>{
     // const params        = window.dataLib.params
     // const user          = window.dataApp.user
 
+    const useApp    = window.dataApp;
+
     const link      = window.dataApp.link;
     const def       = window.dataApp.def;
 
@@ -25,11 +27,11 @@ var eleSelection = ( parameters = {} )=>{
             <div class="div_0obl68EV183c7gK">
                 <div class="div_N1hNsm5myMuYi82">
                     <div class="div_pCjM7W480vX872y">
-                        <button id="btnCleanSearch"><i class="fi fi-rr-search"></i></button>
+                        <button id="btnCleanSearch">${ useApp.icon.get('fi fi-rr-angle-left') }</button>
                         <input id="inputSearch" type="search" placeholder="buscar">
                     </div>
                     <div class="scroll-y" style="display:flex; min-height: 300px; flex: 1; border-radius: 15px;">
-                        <div id="itemNull" class="element-loader" style="--pixel:40px"></div>
+                        <div id="itemNull" class="element-loader" style="--pixel:40px; --color:var(--color-letter)"></div>
                         <div id="itemFalse" class="div_b14S3dH">
                             <i class="fi fi-rr-search-alt"></i>
                             <h3>No hay resultados</h3>
@@ -97,10 +99,10 @@ var eleSelection = ( parameters = {} )=>{
             return `
                 <button 
                     class="button_DVDM01LTdjL1bZi ${ data.id == itemTrue.getAttribute('data-value') ? 'focus' : '' }" 
-                    data-id="${ data.id }" data-value="${ encodeText(data.name).input() }" 
-                    data-data="${ encodeText(JSON.stringify( data )).input() }">
+                    data-id="${ data.id }" data-value="${ encodeInput(data.name) }" 
+                    data-data="${ encodeInput(JSON.stringify( data )) }">
 
-                    <span class="text-ellipsis">${ encodeText(data.name).textarea() }</span>
+                    <span class="text-ellipsis">${ encodeTextarea(data.name) }</span>
                     <i class="fi fi-rr-check-circle"></i>
                 </button>
             `
@@ -275,6 +277,10 @@ var eleSelection = ( parameters = {} )=>{
             
                 margin: auto;
                 border-radius: 15px;
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 }
             }
             
@@ -325,6 +331,9 @@ var eleSelection = ( parameters = {} )=>{
 };
 
 var filterProducto = ()=>{
+
+    const useApp = window.dataApp;
+
     const $element = createNodeElement(`
         <div class="div_zKKi095">
             <div id="closeElement" class="div_N21q19I"></div>
@@ -388,7 +397,7 @@ var filterProducto = ()=>{
                     </div>
                 </div>
                 <footer class="footer_5Fl2Cb4">
-                    <button type="submit" class="focus"><span>Aceptar</span><i class="fi fi-rr-check"></i></button>
+                    <button type="submit" class="focus"><span>Aceptar</span>${ useApp.icon.get('fi fi-rr-check') }</button>
                 </footer>
             </form>
         </div>
@@ -510,66 +519,79 @@ var producto = ()=>{
     `);
 
     const $elements         = createObjectElement( $element.querySelectorAll('[id]'), 'id', true );
-    const render$elements   = new RenderObjectElement( $elements );
+    const renderObjectElement   = new RenderObjectElement( $elements );
+    const textNodeFetch = document.createElement('div');
 
     const elements = {
         filter : filterProducto()
     };
 
-    const observer = new IntersectionObserver(( entries, observer ) => {
+    const intersectionObserver = new IntersectionObserver(( entries, observer ) => {
 
         entries.forEach(entry => {
             if( entry.isIntersecting ) {
                 observer.unobserve( entry.target );
-                $elements.itemTrue.append( dataLoad() );
+                dataLoad();
+                //$elements.itemTrue.append( dataLoad() )
             }
         });
 
     }, { root: null, rootMargin: '0px', threshold: 0 });
 
+    const mutationObserver = new MutationObserver(( mutationsList, observer )=> {
+        if( load.value == true ) return
+        for(var mutation of mutationsList) {
+            if (mutation.type == 'childList') {
+                renderObjectElement.set({
+                    itemFalse : !$elements.itemTrue.children.length,
+                    itemTrue  : !!$elements.itemTrue.children.length
+                });
+            }
+        }
+    }); mutationObserver.observe($elements.itemTrue, { childList: true });
+
     let filter = {};
 
-    const Data = defineVal(0);
-    Data.observe(()=> {
+    const load = defineVal(true);
+    load.observe( load => {
 
-        const render = {
-            itemNull    : Data.value === 0,
-            itemFalse   : Array.isArray(Data.value) && !Data.value.length,
-            itemTrue    : Array.isArray(Data.value) && !!Data.value.length,
-            itemTrueLoad: false
-        };
+        renderObjectElement.set({
+            itemNull    : load,
+            itemFalse   : false,
+            itemTrue    : false,
+        });
 
-        render$elements.set( render );
+    });
 
-        if( render.itemTrue ) {
-            
-            $elements.itemTrue.insertAdjacentHTML('beforeend', Data.value.map( data => {
+    const Data = defineVal([]);
+    Data.observe(Data => {
+        $elements.itemTrue.insertAdjacentHTML('beforeend', Data.map( data => {
+ 
+            return `
+                <a href="#/producto/${ data.id }" class="a_AtXWaYn">
+                    <div class="div_6JXzBm">
+                        <img src="${ link.storage(`/metro/producto/${ data.image }`) }" alt="${ data.sap }">
+                    </div>
+                    <div class="div_Qf7NjXG">
+                        <span>${ data.description }</span>
+                    </div>
+                </a>
+            `
 
-                console.log(data);
+        }).concat(' ').join(''));
 
-                return `
-                    <a href="#/producto/${ data.id }" class="a_AtXWaYn">
-                        <div class="div_6JXzBm">
-                            <img src="${ link.storage(`/metro/producto/${ data.image }`) }" alt="${ data.sap }">
-                        </div>
-                        <div class="div_Qf7NjXG">
-                            <span>${ data.description }</span>
-                        </div>
-                    </a>
-                `
-            }).join(''));
-
-            if( Data.value.length > 49 ) {
-                $elements.itemTrue.append( $elements.itemTrueLoad );
-                observer.observe( $elements.itemTrue.lastElementChild );
-            }
-
+        if( Data.length > 49 ) {
+            $elements.itemTrue.append( $elements.itemTrueLoad );
+            intersectionObserver.observe( $elements.itemTrue.lastElementChild );
+        } else {
+            $elements.itemTrueLoad.remove();
         }
+        
     });
 
     const dataLoad =()=>{
 
-        const element = document.createTextNode("");
+        const textNode = document.createTextNode("");
 
         const queries = {
             query       : 3,
@@ -582,13 +604,15 @@ var producto = ()=>{
         fetch( link.api(`/producto?${ def.paramQueries( queries ) }`) )
             .then( res => res.json())
             .then( data => {
-                if( element.parentElement ) {
+                if( textNode.parentElement ) {
+                    load.value = false;
                     Data.value = data;
-                    console.log(data);
                 }
             });
 
-        return element
+        textNodeFetch.innerHTML = '';
+        textNodeFetch.append( textNode );
+
     };
 
     $elements.theme.addEventListener('click', ()=> {
@@ -612,21 +636,21 @@ var producto = ()=>{
     });
 
     $elements.searchInput.addEventListener('input', ()=> {
-        Data.value = 0;
+        load.value  = true;
         $elements.itemTrue.innerHTML = '';
-        $elements.itemTrue.append( dataLoad() );
+        dataLoad();
 
     });
 
     elements.filter.addEventListener('_submit', e => {
         filter = e.detail.filter;
 
-        Data.value = 0;
+        load.value  = true;
         $elements.itemTrue.innerHTML = '';
-        $elements.itemTrue.append( dataLoad() );
+        dataLoad();
     });
 
-    $elements.itemTrue.append( dataLoad() );
+    dataLoad();
     return $element
 };
 
